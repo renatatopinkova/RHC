@@ -3,7 +3,6 @@
 
 library(RSelenium)
 library(wdman)
-library(rvest)
 library(plyr)
 library(tidyr)
 
@@ -57,7 +56,7 @@ while (TRUE) {
 
 container <- browser$findElements("class", "metro-rush-hour-crush")
 length(container) # 353 posts
-
+# saveRDS(container, "container")
 
 # getting text - toy example
 container[[1]]$findElement("tag", 'p')$getElementText()
@@ -75,15 +74,16 @@ content <- sapply(container, function(x) x$getElementText())
 # bind it to a dataframe
 df <- plyr::ldply(content, data.frame)
 names(df)[1] <- "text"
+write.csv(df, "df.csv")
 
-# detach plyr so it doesn't clash with dplyr
+# detach plyr so it doesn't clash with other dplyr later
 detach("package:plyr", unload=TRUE)
 
 # split stringr to text & author columns
 split <- tidyr::separate(df, col = text, 
                   sep = "\\n", into = c("text", "author"))
 
-write.csv(split, "RHC_dataframe.csv")
+write.csv(split, "RHC_dataframe.csv") 
 
 
 
