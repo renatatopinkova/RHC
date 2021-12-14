@@ -36,15 +36,15 @@ new <- df %>%
        group_by(author, text) %>%
          subset(!(text%in%df_old$text))
 
-# bind it to a new one
-df_updated <- rbind(new, df_old)
-
-
-
-# Save --------------------------------------------------------------------
-
-
-# save results
-saveRDS(df_updated, paste0(path, "RHC_dataframe"))
-write.csv(df_updated, paste0(path, "RHC_dataframe.csv"), row.names = F)
+# Determine what to do next
+if(length(new == 8)) {
+  # if there is 8 new posts (max on page), load dynamic scraping script -> 
+  # Selenium script allows getting also posts from next pages
+  source("3_scrape_new_Selenium.R")
+} else {
+  # bind new observations to old dataset
+  df_updated <- rbind(new, df_old)
+  saveRDS(df_updated, paste0(path, "RHC_dataframe"))
+  write.csv(df_updated, paste0(path, "RHC_dataframe.csv"), row.names = F)
+}
 
