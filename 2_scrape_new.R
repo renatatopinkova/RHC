@@ -42,7 +42,7 @@ if(length(new == 8)) {
   # Selenium script allows getting also posts from next pages
   source("3_scrape_new_Selenium.R")
 } else {
-  # bind new observations to old dataset
+  # bind new observations to old dataset & save
   df_updated <- rbind(new, df_old)
   saveRDS(df_updated, paste0(path, "RHC_dataframe"))
   write.csv(df_updated, paste0(path, "RHC_dataframe.csv"), row.names = F)

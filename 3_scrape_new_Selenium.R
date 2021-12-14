@@ -37,7 +37,7 @@ browser$navigate("https://metro.co.uk/rush-hour-crush/?ico=rhc_banner_home/home"
 # wait for page to load
 Sys.sleep(10)
 
-# confirm cookies
+# confirm cookies (otherwise scrolling is disabled)
 cookie <- browser$findElement("class", "level1PrimaryButton-0-0-8")
 cookie$clickElement()
 
@@ -48,7 +48,7 @@ load_more <- browser$findElement('id', "metro-rush-hour-crush-load-more")
 # go three pages deep (should not be more than 2 new pages, but let's be cautious)
 i <- 1
 while (TRUE) {
-  # go down to see the button (getElementInView does not work properly)
+  # go down to see the button (getElementLocationInView does not work properly)
   browser$executeScript(paste0("window.scrollTo(0, ", i*1800, ");"))
   Sys.sleep(runif(1,1,2))
   # click on button
@@ -64,10 +64,10 @@ while (TRUE) {
 
 
 container <- browser$findElements("class", "metro-rush-hour-crush")
-length(container) # 
+length(container) 
 
 
-# gets both in one go - can be splitted later in text - author by \n
+# Get text from container
 content <- sapply(container, function(x) x$getElementText())
 
 # stop server after session
@@ -77,14 +77,14 @@ server$stop()
 
 # Binding it to a dataframe -----------------------------------------------
 
-# bind it to a dataframe
+# bind text to a dataframe
 df <- plyr::ldply(content, data.frame)
 names(df)[1] <- "text"
 
-# detach plyr so it doesn't clash with other dplyr later
+# detach plyr so it doesn't clash with dplyr later
 detach("package:plyr", unload=TRUE)
 
-# split stringr to text & author columns
+# split strings to text & author columns by newline
 df <- tidyr::separate(df, col = text, 
                          sep = "\\n", into = c("text", "author"))
 
@@ -111,6 +111,6 @@ new <- df %>%
 # bind it to the old dataset
 df_updated <- rbind(new, df_old)
 
-
+# save
 saveRDS(df_updated, paste0(path, "RHC_dataframe"))
 write.csv(df_updated, paste0(path, "RHC_dataframe.csv"), row.names = F)
