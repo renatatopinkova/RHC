@@ -40,7 +40,7 @@ new <- df %>%
 if(nrow(new) == 8) {
   # if there is 8 new posts (max on page), load dynamic scraping script -> 
   # Selenium script allows getting also posts from next pages
-  source("3_scrape_new_Selenium.R")
+  source(paste0(path, "3_scrape_new_Selenium.R"))
 } else {
   # bind new observations to old dataset & save
   df_updated <- rbind(new, df_old)
